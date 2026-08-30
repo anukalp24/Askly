@@ -10,6 +10,7 @@ function App() {
   const [loader, setloader] = useState(false)
 const [files, setfiles] = useState([])
 const [message, setmessage] = useState("")
+const [response, setresponse] = useState("")
   const handleadd =  async ()=>{
 
     try {
@@ -19,23 +20,35 @@ const [message, setmessage] = useState("")
       }
 
       const formdata = new FormData()
-      formdata.append("files" , files[0])
-      formdata.append("files" , files[1])
-      formdata.append("files" , files[2])
-      if(!text){
-
-      }
-      else{
+      files.forEach(file=>{
+        formdata.append("filesparameter" , file)
+      })
+      
+      if(text){
         formdata.append("text" , text)
       }
+     
 
 
       
-    const request = fetch(`http://127.0.0.1:8000/search` , {
+    const request = await fetch(`http://127.0.0.1:8000/search` , {
       method: "POST",
       body: formdata
       
     })
+
+    const response = await request.json()
+    if(request.ok){
+      setresponse(response)
+    }
+
+    else{
+      setmessage(response.message)
+    }
+
+    
+
+
 
      
     } catch (error) {
@@ -51,10 +64,8 @@ const [message, setmessage] = useState("")
 
   const handlefile = (e)=>{
     setmessage("")
-    setfiles([...files , e.target.files])
-  }
-
-
+    setfiles([...files , ...e.target.files])
+  }   
   return (
     <>
      <div className="app">
@@ -85,7 +96,6 @@ const [message, setmessage] = useState("")
               </span>
             </div>
           </div>
-
           <div className="document-item">
             <span className="pdf-icon">PDF</span>
             <div className="document-info">
@@ -161,11 +171,7 @@ const [message, setmessage] = useState("")
 
           {/* Messages will come here later */}
           <div className="messages">
-
-            {/* 
-              You will render chat messages here later.
-            */}
-
+            {response.answer}
           </div>
 
         </section>
@@ -179,6 +185,13 @@ const [message, setmessage] = useState("")
             >
             </textarea>
             <p id='error'> {message}</p>
+
+
+            {response.message &&(
+<>
+<p id='message'> {response.message}</p>
+</>
+            )}
            
 
 

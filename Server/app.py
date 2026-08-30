@@ -104,6 +104,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes.search import router as search
 app  = FastAPI()
 
 app.add_middleware(
@@ -114,6 +115,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(search)
 
 
 

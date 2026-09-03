@@ -5,12 +5,12 @@ import viteLogo from './assets/vite.svg'
 import './App.css'
 
 function App() {
-  const [text, settext] = useState("")
+  const [question, setquestion] = useState("")
+  const [response, setresponse] = useState([])
 
   const [loader, setloader] = useState(false)
 const [files, setfiles] = useState([])
 const [message, setmessage] = useState("")
-const [response, setresponse] = useState("")
   const handleadd =  async ()=>{
 
     try {
@@ -31,7 +31,7 @@ const [response, setresponse] = useState("")
 
 
       
-    const request = await fetch(`http://127.0.0.1:8000/search` , {
+    const request = await fetch(`http://127.0.0.1:8000/upload` , {
       method: "POST",
       body: formdata
       
@@ -39,7 +39,7 @@ const [response, setresponse] = useState("")
 
     const response = await request.json()
     if(request.ok){
-      setresponse(response)
+      setresponse(response)  
     }
 
     else{
@@ -47,9 +47,6 @@ const [response, setresponse] = useState("")
     }
 
     
-
-
-
      
     } catch (error) {
       setmessage(error.message)

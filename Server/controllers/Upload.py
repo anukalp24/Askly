@@ -8,26 +8,30 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 import tempfile
 import os
+import uuid
 from pathlib import Path
 from sentence_transformers import CrossEncoder
 reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+# hugging face embeddigns model is a encoder which takes text docuemtn and convert it itno numberical represntaions liek dcimal form and all
 
 load_dotenv()
 
 llm = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0
-)
-
+) 
 embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
-async def searchController(files, text):
+async def searchController(files, text , session_id=None):
 
     AllDocuments = []
     print(" search - controller running")
 
     try:
+
+        if not session_id:
+            session_id = str(uuid.uuid4())
 
         for file in files:
 # each file is an uplaod file obeject
@@ -47,6 +51,7 @@ async def searchController(files, text):
                 for doc in document:
 
                     doc.metadata["source_file"] = file.filename
+                    doc.metadata["session_id"] = session_id
 
                 AllDocuments.extend(document)
             finally:  
@@ -76,7 +81,7 @@ async def searchController(files, text):
 
         # sentence transformers creates the embeddings
 
-
+# embeddigns are compressed where as the original chunks also known as page content is not and contains full information
         vectorDB = Chroma.from_documents(
             documents=chunks,
             embedding=embeddings,
@@ -85,9 +90,11 @@ async def searchController(files, text):
         )  # stores in vector db
 
         # vector db stores the original chunks, embeddings and metadata of that chunk
+        # vector db also stores chunk in docuemtn format
+        
 
         retriever = vectorDB.as_retriever(
-            search_kwargs={"k": 25}
+            search_kwargs={"k": 25 , "filter" : {"session_id" : session_id}}
         )  # return 5 most relevant chunks
 
         # round-1 do similarity search and find the top 25 chunks which is closest to the question vector numbers
@@ -124,31 +131,30 @@ async def searchController(files, text):
                 pairs.append((text , chunk.page_content))  
             scores = reranker.predict(pairs)
 
-            reranked = sorted(zip(ReturnedAnswer , scores) , key=lambda x: x[1] , reverse=True)
-
+            reranked = sorted(zip(ReturnedAnswer , scores) , key=lambda x: x[1] , reverse=True) # it is jsut sorting it from bigger to smaller
+            
             TopChunks  = []
             # here tuple contains (doc1 , 0.6) for ex
             for tuplee , score in reranked[:5]:
              TopChunks.append(tuplee)
             #  and here we are jsut addign the  doc  not the score
-
-            
 # ReturnedAnswer = [doc1, doc2, doc3, ...]
 # scores =         [0.2, 0.9, 0.5, ...]
 
 # zip(ReturnedAnswer, scores) → [(doc1, 0.2), (doc2, 0.9), (doc3, 0.5), ...]
 
-# reranked = [
-#     (doc2, 0.9),   # highest score, now first
-#     (doc3, 0.5),
-#     (doc1, 0.2),   # lowest score, now last
+# reranked = [ a tuple contianign docuemtn obejct and scores
+#     (Document(page_content="...doc2 text..."), 0.9),
+#     (Document(page_content="...doc3 text..."), 0.5),
+#     (Document(page_content="...doc1 text..."), 0.2),
 # ]
+        
+    
 
 
             context = "\n\n".join(
                 [doc.page_content for doc in TopChunks]
             )
-
             prompt = f"""
 You are a precise, factual assistant that answers questions strictly
 based on the provided document context. You never use outside knowledge,
@@ -178,10 +184,15 @@ Question:
 {text}
 """
 
-            response = llm.invoke(prompt)
-            return JSONResponse(status_code=200, content={"answer": response.content})
+            req = llm.invoke(prompt)
 
-        return JSONResponse(status_code=200, content={"message":  "your documents are  processed  successfully , now u can ask questions related to it"})
+            response = JSONResponse(status_code=200 , content={"session_id" : session_id , "question": text , "answer" : req.content})
+            response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=True, samesite="none",)
+            return response
+        
+       
+
+        return JSONResponse(status_code=200, content={  "session_id" :  session_id  , "message":  "your documents are  processed  successfully , now u can ask questions related to it"})
 
     except Exception as error:
 
@@ -207,3 +218,12 @@ Question:
 
 # Step A: feed question + chunk together into the model
 # Step B: the model internally reads both, weighs how they relate to each other, and outputs ONE number directly
+
+
+# this is why we use ranking:- very important:-
+
+# One-line answer
+
+# The vector's data loss is never fixed or reversed — it's permanent. Reranking works around it by ignoring the lossy vector
+#  entirely at that stage and going back to the original, full, un-compressed text (which was always preserved separately)
+#  to make a more accurate judgment — it's a workaround using better source material, not a repair of the compressed data.

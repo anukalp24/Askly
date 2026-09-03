@@ -104,9 +104,9 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.search import router as search
 app  = FastAPI()
-
+from Server.routes.Ask import router as ask_router
+from Server.routes.Upload import router as upload_router
 app.add_middleware(
     CORSMiddleware ,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:8000"],
@@ -116,7 +116,8 @@ app.add_middleware(
 )
 
 
-app.include_router(search)
+app.include_router(ask_router)
+app.include_router(upload_router)
 
 
 

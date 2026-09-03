@@ -1,0 +1,8 @@
+
+.env
+Server/.env
+__pycache__/
+*.pyc
+venv/
+chroma_storage/
+node_modules/

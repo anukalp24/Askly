@@ -202,14 +202,14 @@ Question:
             req = llm.invoke(prompt)
 
             response = JSONResponse(status_code=200 , content={"session_id" : session_id , "question": text , "answer" : req.content})
-            response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=False, samesite="lax",)
+            response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=True, samesite="none",)
             return response
         
        
 
         response =  JSONResponse(status_code=400, content={  "session_id" :  session_id  , "message":  "Document processed successfully. You can now ask questions about it."})
         print("it has runned successfully")
-        response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=False, samesite="lax",)
+        response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=True, samesite="none",)
         return response
 
     except Exception as error:

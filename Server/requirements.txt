@@ -1,9 +1,14 @@
+fastapi
+uvicorn
 langchain
 langchain-core
 langchain-community
+langchain-text-splitters
+langchain-huggingface
+langchain-chroma
+langchain-groq
 pypdf
 pymupdf
-ipykernel
 sentence-transformers
-faiss-cpu
 chromadb
+python-dotenv

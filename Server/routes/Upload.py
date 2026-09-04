@@ -5,8 +5,8 @@ from typing import Optional , List
 
 router = APIRouter()
 @router.post("/upload")
-async def func(filesparameter : List[UploadFile] = File(...) , text: Optional[str]  = Form(None), session_id: Optional[str]   = Cookie(None)): #  "Get files from the incoming multipart/form-data request as uploaded files."
- return await searchController(filesparameter , text , session_id)
+async def func(filesparameter : List[UploadFile] = File(...) , question: Optional[str]  = Form(None), session_id: Optional[str]   = Cookie(None)): #  "Get files from the incoming multipart/form-data request as uploaded files."
+ return await searchController(filesparameter , question , session_id)
 # when req comes then only call this function
 
 # as its a decorator either we need to pass the reqeasut instance or parse and send to the ocntorlle ror we can just use norml cotnrolle rclallign then the controller itslef hadkes eveyrhtig

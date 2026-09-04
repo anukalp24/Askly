@@ -1,52 +1,82 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import toast, { Toaster } from 'react-hot-toast'
 
+// once in your App, anywhere in the JSX tree:
+import './App.css'
 function App() {
   const [question, setquestion] = useState("")
   const [response, setresponse] = useState([])
 
   const [loader, setloader] = useState(false)
 const [files, setfiles] = useState([])
-const [message, setmessage] = useState("")
+const [message, setmessage] = useState(null)
   const handleadd =  async ()=>{
+    
 
     try {
       setloader(true)
-      if(files.length === 0){
-        return setmessage("Please upload a PDF , file or a document before asking a question.")
+      if(files.length === 0 && !localStorage.getItem("session_id")){
+       
+       return toast.error("Upload pdf to get started")
       }
+
+      
 
       const formdata = new FormData()
       files.forEach(file=>{
         formdata.append("filesparameter" , file)
       })
       
-      if(text){
-        formdata.append("text" , text)
+      if(question){
+        formdata.append("question" , question)
       }
      
 
 
-      
-    const request = await fetch(`http://127.0.0.1:8000/upload` , {
-      method: "POST",
-      body: formdata
-      
-    })
+      if(files.length === 0 && localStorage.getItem("session_id")){
+        
+          const req = await fetch(`http://127.0.0.1:8000/ask` , {
+            method: "POST" ,
+            body:formdata ,
+            credentials: "include"
+          })
+          const result = await req.json()
 
-    const response = await request.json()
-    if(request.ok){
-      setresponse(response)  
-    }
+          if(req.ok){
+            setquestion("")
 
-    else{
-      setmessage(response.message)
-    }
+            setresponse([... response , result])
+            setfiles([])
+          }
 
-    
+          else{
+            // setmessage(result.message)
+            toast.error(result.message)
+          }
+        
+      }
+      else{
+        
+          const req = await fetch(`http://127.0.0.1:8000/upload` , {
+            method: "POST" ,
+            body:formdata , 
+            credentials:"include"
+          })
+          const result = await req.json()
+
+
+          if(req.ok){
+            setquestion("")
+            setresponse([... response , result])
+            localStorage.setItem("session_id" , result.session_id)
+          }
+
+          else{
+            // setmessage(result.message)
+               toast.error(result.message)
+          }
+       
+      }
      
     } catch (error) {
       setmessage(error.message)
@@ -65,186 +95,271 @@ const [message, setmessage] = useState("")
   }   
   return (
     <>
-     <div className="app">
+ <Toaster
+        position="top-center"
+        toastOptions={{ duration: 3000 }}
+      />
 
-      {/* Sidebar */}
-      <aside className="sidebar">
+      <div className="app">
 
-        <div className="brand">
-          <div className="brand-icon">✦</div>
-          <h2>AskMyPDF</h2>
-        </div>
+        {/* Desktop Sidebar */}
+        <aside className="sidebar">
 
-        <button className="new-chat-btn">
-          + New Chat
-        </button>
-
-        <div className="sidebar-section">
-          <p className="section-title">Your Documents</p>
-
-          <div className="document-item active">
-            <span className="pdf-icon">PDF</span>
-            <div className="document-info">
-              <span className="document-name">
-                My Resume.pdf
-              </span>
-              <span className="document-meta">
-                8 pages
-              </span>
-            </div>
-          </div>
-          <div className="document-item">
-            <span className="pdf-icon">PDF</span>
-            <div className="document-info">
-              <span className="document-name">
-                Health Records.pdf
-              </span>
-              <span className="document-meta">
-                13 pages
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <button className="upload-btn">
-          <span>↑</span>
-          Upload PDF
-        </button>
-
-        
-
-      </aside>
-
-
-      {/* Main Area */}
-      <main className="main">
-
-        {/* Header */}
-        <header className="topbar">
-
-          <div>
-            <h1>Ask your documents</h1>
-            <p>Get answers from your PDFs using AI.</p>
+          <div className="brand">
+            <div className="brand-icon">✦</div>
+            <h2>AskMyPDF</h2>
           </div>
 
-        
+          <button
+            disabled={!localStorage.getItem("session_id")}
+            className="new-chat-btn"
+            onClick={() => {
+              localStorage.removeItem("session_id")
+              setresponse([])
+              setfiles([])
+              toast.success("Started a new session")
+            }}
+          >
+            + New Chat
+          </button>
 
-        </header>
+        </aside>
 
 
-        {/* Chat Area */}
-        <section className="chat-area">
+        {/* Main Area */}
+        <main className="main">
 
-          {/* Empty State */}
-          <div className="empty-state">
+          {/* Mobile Navbar */}
+          <div className="mobile-navbar">
 
-            <div className="empty-icon">
-              ✦
+            <div className="mobile-brand">
+              <div className="brand-icon">✦</div>
+              <h2>AskMyPDF</h2>
             </div>
 
-            <h2>What would you like to know?</h2>
-
-            <p>
-              Ask a question about your documents and
-              get an answer based on their contents.
-            </p>
-
-            <div className="suggestions">
-
-             
-
-              <button>
-                Summarize this document
-              </button>
-
-              <button>
-                What are the main points?
-              </button>
-
-            </div>
-
-          </div>
-
-
-          {/* Messages will come here later */}
-          <div className="messages">
-            {response.answer}
-          </div>
-
-        </section>
-
-
-        {/* Input Area */}
-        <div className="input-wrapper">
-
-          <div className="question-box">
-            <textarea value={text} onChange={(e)=>{settext(e.target.value) ; setmessage("")}} placeholder='Ask anything about your documents...'
+            <button
+              disabled={!localStorage.getItem("session_id")}
+              className="mobile-new-chat"
+              onClick={() => {
+                localStorage.removeItem("session_id")
+                setresponse([])
+                setfiles([])
+                 setquestion("")
+                toast.success("Started a new session")
+              }}
             >
-            </textarea>
-            <p id='error'> {message}</p>
+              + New Chat
+            </button>
+
+          </div>
 
 
-            {response.message &&(
-<>
-<p id='message'> {response.message}</p>
-</>
+          {/* Header */}
+          <header className="topbar">
+
+            <div>
+              <h1>Chat with your PDFs</h1>
+              <p>
+                Ask questions and get answers from your documents.
+              </p>
+            </div>
+
+          </header>
+
+
+          {/* Chat Area */}
+          <section className="chat-area">
+
+            {/* Empty State */}
+            {response.length === 0 && (
+              <div className="empty-state">
+
+                <div className="empty-icon">
+                  ✦
+                </div>
+
+                <h2>What would you like to know?</h2>
+
+                <p>
+                  Ask a question about your documents and
+                  get an answer based on their contents.
+                </p>
+
+                {/* <div className="suggestions">
+
+                  <button>
+                    Summarize this document
+                  </button>
+
+                  <button>
+                    What are the main points?
+                  </button>
+
+                </div> */}
+
+              </div>
             )}
-           
 
 
-            <label className="file-upload">
-  <span className="upload-icon">📎</span>
-  <span>Attach PDF</span>
+            {/* Messages */}
+            <div className="messages">
 
-  <input
-    type="file"
-    multiple
-    accept=".pdf"
-    onChange={handlefile}
-  />
-</label>
+              {response.map((val, index) => (
+
+                <div
+                  className="message-pair"
+                  key={index}
+                >
+
+                  <div className="message user-message">
+
+                    <div className="message-role">
+                      You
+                    </div>
+
+                    <p>
+                      {val.question}
+                    </p>
+
+                  </div>
 
 
+                  <div className="message ai-message">
 
-            <div className="input-bottom">
+                    <div className="message-role">
+                      AskMyPDF
+                    </div>
 
-              <div className="selected-document">
-                <span className="small-pdf-icon">PDF</span>
-                My Resume.pdf
+                    <p>
+                      {val.answer}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </section>
+
+
+          {/* Input Area */}
+          <div className="input-wrapper">
+
+            <div className="question-box">
+
+              <textarea
+                value={question}
+                onChange={(e) => {
+                  setquestion(e.target.value)
+                  setmessage("")
+                }}
+                placeholder="Ask anything about your documents..."
+              />
+
+              <p id="error"></p>
+
+
+              {message && (
+                <p id="message">
+                  {message}
+                </p>
+              )}
+
+
+              {/* File Upload */}
+              <label className="file-upload">
+
+                <span className="upload-icon">
+                  📎
+                </span>
+
+                <span>
+                  Attach PDF
+                </span>
+
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf"
+                  onChange={handlefile}
+                />
+
+              </label>
+
+
+              {/* Input Bottom */}
+              <div className="input-bottom">
+
+                <div className="selected-document">
+
+                  <span className="small-pdf-icon">
+                    PDF
+                  </span>
+
+
+                  {files.length > 0 ? (
+
+                    <>
+                      {files.map((pdf, index) => (
+
+                        <div key={index}>
+                          <p>{pdf.name}</p>
+                        </div>
+
+                      ))}
+                    </>
+
+                  ) : (
+
+                    <span className="file-name">
+                      No file selected
+                    </span>
+
+                  )}
+
+                </div>
+
+
+                {/* Send Button */}
+                <button
+                  onClick={handleadd}
+                  className="send-btn"
+                >
+
+                  {loader ? (
+
+                    <div className="loader"></div>
+
+                  ) : (
+
+                    <>
+                      ↑
+                    </>
+
+                  )}
+
+                </button>
+
               </div>
 
-              <button onClick={handleadd} className="send-btn">
-                {loader ? (
-                  <>
-                  <div className="loader"></div>
-                  </>
-
-
-                ) : (
-
-                  <>
-                   ↑
-        
-                  </>
-
-                )}
-              
-              </button>
-
             </div>
+
+
+            <p className="input-note">
+              Answers are generated from your uploaded documents.
+            </p>
 
           </div>
 
-          <p className="input-note">
-            Answers are generated from your uploaded documents.
-          </p>
+        </main>
 
-        </div>
+      </div>
+  
 
-      </main>
-
-    </div>
-    </>
+</>
   )
 }
 

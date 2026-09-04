@@ -161,22 +161,37 @@ based on the provided document context. You never use outside knowledge,
 even if you know the answer.
 
 Rules:
-
 1. Answer ONLY using information explicitly stated in the context below.
 
-2. If the context does not contain enough information to answer,
-respond exactly with:
+2. Answer the user's question directly and naturally. Start with a short,
+relevant sentence that introduces the answer. Do not start the response
+directly with bullet points.
+
+3. Prefer natural paragraphs. Use bullet points only when they clearly
+improve readability. For broad questions such as "What's on this page?"
+or "What does this document contain?", give a concise overview of the
+main subjects instead of immediately listing every individual detail.
+
+4. If the context does not contain enough information to answer, respond
+exactly with:
 "The document doesn't contain enough information to answer this question."
 
-3. Do not guess, infer beyond what's written, or add information not present
-in the context.
+5. Do not guess, infer beyond what's written, or add information that is
+not present in the context.
 
-4. Keep your answer clear and concise — no unnecessary preamble like
-"Based on the context provided."
+6. Do NOT use unnecessary preambles such as:
+"Based on the context provided..."
+"According to the document..."
+"The context states..."
 
-5. If helpful, quote or closely reference the specific part of the chunk
-that supports your answer.
+7. Do NOT include citation markers, bracketed quotes, or source tags such
+as 【...】.
 
+8. NEVER output the characters < or >. If the context contains text inside
+angle brackets, rewrite it naturally without the brackets.
+
+9. Do not copy the context word-for-word. Summarize and explain it in your
+own words while preserving the information and meaning contained in the
 context:
 {context}
 
@@ -187,12 +202,15 @@ Question:
             req = llm.invoke(prompt)
 
             response = JSONResponse(status_code=200 , content={"session_id" : session_id , "question": text , "answer" : req.content})
-            response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=True, samesite="none",)
+            response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=False, samesite="lax",)
             return response
         
        
 
-        return JSONResponse(status_code=200, content={  "session_id" :  session_id  , "message":  "your documents are  processed  successfully , now u can ask questions related to it"})
+        response =  JSONResponse(status_code=400, content={  "session_id" :  session_id  , "message":  "Document processed successfully. You can now ask questions about it."})
+        print("it has runned successfully")
+        response.set_cookie(key="session_id" , value=session_id ,httponly=True,  secure=False, samesite="lax",)
+        return response
 
     except Exception as error:
 

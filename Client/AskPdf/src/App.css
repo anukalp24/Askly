@@ -1,7 +1,18 @@
+/* =========================
+   RESET
+========================= */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
 }
 
 body {
@@ -11,7 +22,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+input {
   font-family: inherit;
 }
 
@@ -26,6 +38,7 @@ button {
 
 .app {
   display: flex;
+  width: 100%;
   height: 100vh;
   overflow: hidden;
 }
@@ -38,6 +51,8 @@ button {
 .sidebar {
   width: 270px;
   height: 100vh;
+  flex-shrink: 0;
+
   background: #ffffff;
   border-right: 1px solid #e7e8eb;
 
@@ -84,6 +99,7 @@ button {
 
 .new-chat-btn {
   width: 100%;
+
   border: 1px solid #dedfe3;
   background: #ffffff;
 
@@ -103,154 +119,9 @@ button {
   background: #f4f5f7;
 }
 
-
-/* Documents */
-
-.sidebar-section {
-  margin-top: 30px;
-}
-
-.section-title {
-  color: #8b8e95;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-
-  padding: 0 8px;
-  margin-bottom: 10px;
-}
-
-.document-item {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-
-  padding: 10px 9px;
-
-  border-radius: 9px;
-
-  margin-bottom: 3px;
-
-  transition: 0.2s;
-}
-
-.document-item:hover {
-  background: #f4f5f7;
-}
-
-.document-item.active {
-  background: #f0f1f3;
-}
-
-.pdf-icon {
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #f1f2f4;
-
-  border-radius: 7px;
-
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.document-info {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.document-name {
-  font-size: 13px;
-  font-weight: 600;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.document-meta {
-  color: #92959b;
-  font-size: 11px;
-}
-
-
-/* Upload */
-
-.upload-btn {
-  margin-top: 14px;
-
-  width: 100%;
-
-  border: 1px dashed #cfd1d6;
-  background: transparent;
-
-  padding: 11px;
-
-  border-radius: 9px;
-
-  color: #5e6269;
-
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.upload-btn:hover {
-  background: #f7f7f8;
-}
-
-
-/* Sidebar bottom */
-
-.sidebar-bottom {
-  margin-top: auto;
-
-  border-top: 1px solid #e9eaec;
-
-  padding-top: 16px;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 7px;
-}
-
-.avatar {
-  width: 34px;
-  height: 34px;
-
-  border-radius: 50%;
-
-  background: #e5e6e9;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.user-profile p {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.user-profile span {
-  font-size: 11px;
-  color: #92959b;
+.new-chat-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 
@@ -260,8 +131,8 @@ button {
 
 .main {
   flex: 1;
-
   min-width: 0;
+  min-height: 0;
 
   display: flex;
   flex-direction: column;
@@ -270,10 +141,13 @@ button {
 }
 
 
-/* Topbar */
+/* =========================
+   TOPBAR
+========================= */
 
 .topbar {
   height: 76px;
+  flex-shrink: 0;
 
   padding: 0 38px;
 
@@ -299,35 +173,24 @@ button {
   font-size: 12px;
 }
 
-.settings-btn {
-  border: none;
-  background: transparent;
-
-  width: 36px;
-  height: 36px;
-
-  border-radius: 8px;
-
-  font-size: 17px;
-}
-
-.settings-btn:hover {
-  background: #f0f1f3;
-}
-
 
 /* =========================
-   CHAT
+   CHAT AREA
 ========================= */
 
 .chat-area {
   flex: 1;
+  min-height: 0;
 
   overflow-y: auto;
+  overflow-x: hidden;
 
   display: flex;
   flex-direction: column;
 }
+
+
+/* Empty state */
 
 .empty-state {
   width: min(650px, 90%);
@@ -335,6 +198,8 @@ button {
   margin: auto;
 
   text-align: center;
+
+  padding: 30px 0;
 }
 
 .empty-icon {
@@ -376,7 +241,6 @@ button {
 
 .suggestions {
   display: flex;
-
   flex-wrap: wrap;
 
   justify-content: center;
@@ -396,6 +260,8 @@ button {
   color: #555960;
 
   font-size: 12px;
+
+  transition: 0.2s;
 }
 
 .suggestions button:hover {
@@ -403,21 +269,93 @@ button {
 }
 
 
-/* Messages */
+/* =========================
+   MESSAGES
+========================= */
 
 .messages {
-  width: min(780px, 90%);
+  width: min(720px, 90%);
 
-  margin: 30px auto;
+  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+
+  gap: 24px;
+
+  padding: 24px 0;
+}
+
+.message-pair {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+.message {
+  max-width: 85%;
+
+  padding: 14px 18px;
+
+  border-radius: 12px;
+
+  line-height: 1.6;
+  font-size: 15px;
+
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.message-role {
+  margin-bottom: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  opacity: 0.6;
+
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.message p {
+  margin: 0;
+
+  white-space: pre-wrap;
+}
+
+.user-message {
+  align-self: flex-end;
+
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+
+  border-bottom-right-radius: 4px;
+}
+
+.ai-message {
+  align-self: flex-start;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e5e5e5;
+
+  color: #1a1a1a;
+
+  border-bottom-left-radius: 4px;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ai-message .message-role {
+  color: #6366f1;
+  opacity: 1;
 }
 
 
 /* =========================
-   INPUT
+   INPUT AREA
 ========================= */
 
 .input-wrapper {
@@ -441,7 +379,11 @@ button {
 }
 
 .question-box textarea {
+  display: block;
+
   width: 100%;
+
+  min-height: 45px;
 
   border: none;
   outline: none;
@@ -449,12 +391,11 @@ button {
   resize: none;
 
   background: transparent;
-
   color: #17191c;
 
   font-size: 14px;
 
-  min-height: 45px;
+  line-height: 1.5;
 }
 
 .question-box textarea::placeholder {
@@ -462,28 +403,103 @@ button {
 }
 
 
-/* Input bottom */
+/* Error / success message */
+
+#error {
+  color: rgb(194, 14, 14);
+}
+
+#message {
+  margin-top: 5px;
+
+  color: rgb(5, 190, 5);
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   FILE UPLOAD
+========================= */
+
+.file-upload {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 8px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #e1e3e7;
+
+  border-radius: 9px;
+
+  background: #f8f9fa;
+
+  color: #555a63;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.file-upload:hover {
+  background: #f0f1f3;
+
+  border-color: #cfd2d7;
+
+  color: #202328;
+}
+
+.upload-icon {
+  font-size: 15px;
+}
+
+.file-upload input {
+  display: none;
+}
+
+
+/* =========================
+   INPUT BOTTOM
+========================= */
 
 .input-bottom {
   display: flex;
 
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
 
-  margin-top: 5px;
+  gap: 12px;
+
+  margin-top: 10px;
 }
 
 .selected-document {
+  min-width: 0;
+
   display: flex;
+
   align-items: center;
+
   gap: 7px;
 
   color: #73767d;
 
   font-size: 11px;
+
+  overflow: hidden;
 }
 
 .small-pdf-icon {
+  flex-shrink: 0;
+
   font-size: 8px;
   font-weight: 800;
 
@@ -494,9 +510,32 @@ button {
   border-radius: 4px;
 }
 
+.file-name {
+  color: #73767d;
+}
+
+.selected-document > div {
+  min-width: 0;
+
+  max-width: 180px;
+}
+
+.selected-document > div p {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* Send button */
+
 .send-btn {
   width: 34px;
   height: 34px;
+
+  flex-shrink: 0;
 
   border: none;
 
@@ -510,11 +549,44 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: 0.2s;
 }
 
 .send-btn:hover {
   opacity: 0.85;
 }
+
+.send-btn:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.5;
+}
+
+
+/* Loader */
+
+.loader {
+  width: 18px;
+  height: 18px;
+
+  border: 3px solid #d1d1d1;
+
+  border-top: 3px solid #0f0f0f;
+
+  border-radius: 50%;
+
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* Input note */
 
 .input-note {
   text-align: center;
@@ -528,8 +600,206 @@ button {
 
 
 /* =========================
-   RESPONSIVE
+   MOBILE
 ========================= */
+
+@media (max-width: 700px) {
+
+
+  .topbar{
+    display: none;
+  }
+  .app {
+    height: 100dvh;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .topbar {
+    height: 64px;
+
+    padding: 0 16px;
+  }
+
+  .topbar h1 {
+    font-size: 16px;
+  }
+
+  .topbar p {
+    font-size: 11px;
+  }
+
+  .chat-area {
+    width: 100%;
+  }
+
+  .empty-state {
+    width: 90%;
+
+    padding: 20px 0;
+  }
+
+  .empty-icon {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 16px;
+
+    font-size: 21px;
+  }
+
+  .empty-state h2 {
+    font-size: 21px;
+  }
+
+  .empty-state p {
+    font-size: 13px;
+
+    margin-bottom: 20px;
+  }
+
+  .suggestions {
+    padding: 0 5px;
+  }
+
+  .suggestions button {
+    font-size: 11px;
+
+    padding: 8px 12px;
+  }
+
+  .messages {
+    width: 94%;
+
+    padding: 18px 0;
+
+    gap: 20px;
+  }
+
+  .message-pair {
+    gap: 12px;
+  }
+
+  .message {
+    max-width: 90%;
+
+    padding: 12px 14px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+  }
+
+  .message-role {
+    font-size: 10px;
+  }
+
+  .input-wrapper {
+    width: 94%;
+
+    padding-bottom: 12px;
+  }
+
+  .question-box {
+    border-radius: 13px;
+
+    padding: 10px;
+  }
+
+  .question-box textarea {
+    min-height: 42px;
+
+    font-size: 14px;
+  }
+
+  .input-bottom {
+    align-items: flex-end;
+  }
+
+  .selected-document {
+    max-width: calc(100% - 45px);
+
+    flex-wrap: wrap;
+  }
+
+  .selected-document > div {
+    max-width: 150px;
+  }
+
+  .file-upload {
+    padding: 7px 10px;
+
+    font-size: 11px;
+  }
+
+  .send-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .input-note {
+    font-size: 9px;
+
+    margin-top: 7px;
+  }
+}
+
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width: 400px) {
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .topbar h1 {
+    font-size: 15px;
+  }
+
+  .topbar p {
+    font-size: 10px;
+  }
+
+  .messages {
+    width: 96%;
+  }
+
+  .message {
+    max-width: 94%;
+
+    font-size: 13px;
+  }
+
+  .input-wrapper {
+    width: 96%;
+  }
+
+  .suggestions button {
+    width: 100%;
+  }
+
+  .selected-document > div {
+    max-width: 120px;
+  }
+}
+
+.empty-icon{
+  display: none;
+}
+
+
+.mobile-navbar {
+  display: none;
+}
 
 @media (max-width: 700px) {
 
@@ -538,76 +808,50 @@ button {
   }
 
   .topbar {
-    padding: 0 18px;
+    display: none;
   }
 
-  .empty-state h2 {
-    font-size: 21px;
+  .mobile-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
   }
 
-  .input-wrapper {
-    width: 94%;
+  .mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-}
 
+  .mobile-brand .brand-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
 
+  .mobile-brand h2 {
+    margin: 0;
+    font-size: 18px;
+  }
 
-.file-upload {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  .mobile-new-chat {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
 
-  padding: 8px 12px;
-
-  border: 1px solid #e1e3e7;
-  border-radius: 9px;
-
-  background: #f8f9fa;
-  color: #555a63;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-}
-
-.file-upload:hover {
-  background: #f0f1f3;
-  border-color: #cfd2d7;
-  color: #202328;
-}
-
-.upload-icon {
-  font-size: 15px;
-}
-
-.file-upload input {
-  display: none;
-}
-
-#error{
-  color: rgb(194, 14, 14);
-}
-
-
-.loader {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #d1d1d1;
-  border-top: 3px solid #0f0f0f;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .mobile-new-chat:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
-
-#message{
-  color: rgb(5, 190, 5);
-}

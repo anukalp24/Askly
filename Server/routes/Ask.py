@@ -1,5 +1,5 @@
 from fastapi import APIRouter , Form , Cookie
-from Server.controllers.ask import Ask
+from controllers.ask import Ask
 from typing import Optional
 
 router = APIRouter()

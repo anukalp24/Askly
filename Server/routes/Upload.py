@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from Server.controllers.Upload import searchController
+from controllers.Upload import searchController
 from fastapi import UploadFile , File  , Form , Cookie
 from typing import Optional , List
 

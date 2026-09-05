@@ -1,6 +1,8 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+ 
 fastapi
 uvicorn
-langchain
 langchain-core
 langchain-community
 langchain-text-splitters
@@ -12,3 +14,4 @@ pymupdf
 sentence-transformers
 chromadb
 python-dotenv
+ 

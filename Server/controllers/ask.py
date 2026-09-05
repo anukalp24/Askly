@@ -6,12 +6,8 @@ import os
 from pathlib import Path
 from langchain_chroma import Chroma
 from sentence_transformers import CrossEncoder
-load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env")
+from shared_models import llm, embeddings, reranker
 
-llm = ChatGroq(model="openai/gpt-oss-120b" , temperature=0)
-
-embeddings = HuggingFaceEmbeddings(model_name= "sentence-transformers/all-MiniLM-L6-v2")
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 
 
 async def Ask(question , session_id):

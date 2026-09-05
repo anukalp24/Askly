@@ -2,7 +2,6 @@ from fastapi.responses import JSONResponse
 from langchain_community.document_loaders import PyPDFLoader, PyMuPDFLoader, DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pathlib import Path
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
@@ -10,19 +9,14 @@ import tempfile
 import os
 import uuid
 from pathlib import Path
-from sentence_transformers import CrossEncoder
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+from shared_models import llm, embeddings, reranker
+
+
 # hugging face embeddigns model is a encoder which takes text docuemtn and convert it itno numberical represntaions liek dcimal form and all
 
-load_dotenv()
 
-llm = ChatGroq(
-    model="openai/gpt-oss-120b",
-    temperature=0
-) 
-embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+
+
 async def searchController(files, text , session_id=None):
 
     AllDocuments = []

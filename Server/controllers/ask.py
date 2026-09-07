@@ -21,16 +21,12 @@ async def Ask(question , session_id):
 
             if not returnedAnswer:
                 return JSONResponse(status_code=400 , content={"message" : "No relevant information found in the document."})
-#             returned ans will look like this:- # ReturnedAnswer = [
-# #     Document(...),   # chunk 1
-# #     Document(...),   # chunk 2]
-        
-        # round 2 rerank
+
 
         pairs = []
         for chunk in returnedAnswer:
             pairs.append((question , chunk.page_content))
-        scores = reranker.predict(pairs)   # scores = [0.2, 0.9, 0.5, ...]
+        scores = reranker.predict(pairs)  
 
         reranked = sorted(zip(returnedAnswer , scores) , key=lambda x: x[1] , reverse=True)
 

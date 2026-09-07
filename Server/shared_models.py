@@ -9,3 +9,4 @@ embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-
 
 reranker = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-2-v2', device="cpu")
 reranker.model.half()
+

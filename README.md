@@ -88,3 +88,9 @@ npm run dev
 ## License
 
 MIT
+
+
+
+what is this  document about
+what is  the price of the ticket
+"What is the procedure if the flight is cancelled?

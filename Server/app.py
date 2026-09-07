@@ -12,6 +12,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(ask_router)
 app.include_router(upload_router)

@@ -185,17 +185,7 @@ const [message, setmessage] = useState(null)
                   get an answer based on their contents.
                 </p>
 
-                {/* <div className="suggestions">
-
-                  <button>
-                    Summarize this document
-                  </button>
-
-                  <button>
-                    What are the main points?
-                  </button>
-
-                </div> */}
+            
 
               </div>
             )}
@@ -227,7 +217,7 @@ const [message, setmessage] = useState(null)
                   <div className="message ai-message">
 
                     <div className="message-role">
-                      AskMyPDF
+                      Ask-My-PDF
                     </div>
 
                     <p>
